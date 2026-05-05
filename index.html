@@ -6,41 +6,42 @@
 <title>APOCOLLAPSE</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#0a0a0f;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Share Tech Mono',monospace;color:#e0e0c0;overflow:hidden}
-  #gameCanvas{display:block;border:1px solid #1a1a22;image-rendering:pixelated}
-  #hud{position:absolute;top:0;left:50%;transform:translateX(-50%);width:640px;display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;pointer-events:none;z-index:10}
+  #gameRoot *{box-sizing:border-box;margin:0;padding:0}
+  #gameRoot{display:flex;align-items:center;justify-content:center;width:100%;min-height:100vh;background:#0a0a0f;font-family:'Share Tech Mono',monospace;color:#e0e0c0;overflow:hidden}
+  #gameCanvas{display:block;border:1px solid #1a1a22;image-rendering:pixelated;image-rendering:crisp-edges}
+  #wrapper{position:relative;width:640px;height:640px;flex-shrink:0}
+  #hud{position:absolute;top:0;left:0;width:640px;display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;pointer-events:none;z-index:10}
   .hud-block{display:flex;flex-direction:column;gap:2px}
-  .hud-label{font-size:10px;color:#555;letter-spacing:.1em;text-transform:uppercase}
+  .hud-label{font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase}
   .hud-value{font-size:22px;font-family:'Bebas Neue',sans-serif;color:#e0e0c0;line-height:1}
   #abilityBar{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:580px;display:flex;gap:8px;pointer-events:none;z-index:10}
-  .ability-slot{flex:1;border:1px solid #1e1e1e;border-radius:3px;padding:6px 8px;background:rgba(10,10,15,.88);position:relative;overflow:hidden}
+  .ability-slot{flex:1;border:1px solid #2a2a2a;border-radius:3px;padding:6px 8px;background:rgba(10,10,15,.92);position:relative;overflow:hidden}
   .ability-slot.selected{border-color:var(--sc)}
   .ability-slot.selected::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--sc)}
-  .slot-num{position:absolute;top:4px;right:6px;font-size:9px;color:#333}
-  .slot-num.sel{color:#555}
-  .slot-name{font-size:9px;color:#555;margin-bottom:2px}
+  .slot-num{position:absolute;top:4px;right:6px;font-size:9px;color:#555}
+  .slot-num.sel{color:#777}
+  .slot-name{font-size:9px;color:#777;margin-bottom:2px}
   .slot-name.sel{color:var(--sc)}
-  .slot-ability{font-size:10px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .slot-ability{font-size:10px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .slot-ability.sel{color:#e0e0c0}
-  .slot-weapon{font-size:9px;color:#444;margin-top:1px}
-  .slot-weapon.sel{color:#888}
-  .slot-cdtrack{position:absolute;bottom:0;left:0;right:0;height:2px;background:#111}
+  .slot-weapon{font-size:9px;color:#666;margin-top:1px}
+  .slot-weapon.sel{color:#aaa}
+  .slot-cdtrack{position:absolute;bottom:0;left:0;right:0;height:2px;background:#1a1a1a}
   .slot-cdfill{position:absolute;bottom:0;left:0;height:2px;background:var(--sc);opacity:.8;transition:width .05s}
-  #apocBanner{position:absolute;top:50px;left:50%;transform:translateX(-50%);width:640px;display:flex;gap:5px;justify-content:center;pointer-events:none;z-index:10;flex-wrap:wrap}
+  #apocBanner{position:absolute;top:50px;left:0;width:640px;display:flex;gap:5px;justify-content:center;pointer-events:none;z-index:10;flex-wrap:wrap}
   .apoc-pill{font-size:10px;letter-spacing:.07em;padding:2px 8px;border-radius:2px;border:1px solid;text-transform:uppercase}
-  #overlay{position:absolute;top:0;left:50%;transform:translateX(-50%);width:640px;height:640px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:20;background:rgba(10,10,15,.92)}
+  #overlay{position:absolute;top:0;left:0;width:640px;height:640px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:20;background:rgba(10,10,15,.94)}
   #overlay h1{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:.1em;color:#ff4422;line-height:1}
-  #overlay p{font-size:13px;color:#888;text-align:center;line-height:1.9;max-width:420px}
+  #overlay p{font-size:13px;color:#aaa;text-align:center;line-height:1.9;max-width:420px}
   #overlay button{margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:.15em;text-transform:uppercase;padding:12px 32px;background:transparent;border:1px solid #ff4422;color:#ff4422;cursor:pointer;transition:background .15s,color .15s}
   #overlay button:hover{background:#ff4422;color:#0a0a0f}
   #waveAnnounce{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.12em;color:#ff4422;pointer-events:none;z-index:15;opacity:0;text-align:center;line-height:1.2;white-space:pre-line}
-  #controls{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:640px;display:flex;justify-content:center;gap:20px;font-size:10px;color:#383838;pointer-events:none;z-index:10}
-  #wrapper{position:relative;width:640px;height:640px}
+  #controls{position:absolute;bottom:8px;left:0;width:640px;display:flex;justify-content:center;gap:20px;font-size:10px;color:#666;pointer-events:none;z-index:10}
   #effectiveness-flash{position:absolute;top:74px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.08em;pointer-events:none;z-index:12;opacity:0;transition:opacity .1s;text-transform:uppercase}
 </style>
 </head>
 <body>
+<div id="gameRoot">
 <div id="wrapper">
   <canvas id="gameCanvas" width="640" height="640"></canvas>
   <div id="hud">
@@ -59,6 +60,7 @@
     <button id="startBtn">Begin the End</button>
   </div>
   <div id="controls"><span>WASD move</span><span>mouse aim</span><span>1-4 / scroll select ability</span><span>space use</span></div>
+</div>
 </div>
 
 <script>
