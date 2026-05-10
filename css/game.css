@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap');
+
+/* Scoped to gameRoot — won't fight parent site CSS */
+#gameRoot * { box-sizing: border-box; margin: 0; padding: 0; }
+#gameRoot {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; min-height: 100vh;
+  background: #0a0a0f;
+  font-family: 'Share Tech Mono', monospace;
+  color: #e0e0c0;
+  overflow: hidden;
+}
+
+/* ── Canvas ── */
+#gameCanvas {
+  display: block;
+  border: 1px solid #1a1a22;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ── Wrapper — all HUD elements positioned inside this ── */
+#wrapper {
+  position: relative;
+  width: 640px; height: 640px;
+  flex-shrink: 0;
+}
+
+/* ── HUD ── */
+#hud {
+  position: absolute; top: 0; left: 0; width: 640px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 10px 14px;
+  pointer-events: none; z-index: 10;
+}
+.hud-block { display: flex; flex-direction: column; gap: 2px; }
+.hud-label { font-size: 10px; color: #888; letter-spacing: .1em; text-transform: uppercase; }
+.hud-value { font-size: 22px; font-family: 'Bebas Neue', sans-serif; color: #e0e0c0; line-height: 1; }
+
+/* ── Apocalypse banner ── */
+#apocBanner {
+  position: absolute; top: 50px; left: 0; width: 640px;
+  display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;
+  pointer-events: none; z-index: 10;
+}
+.apoc-pill {
+  font-size: 10px; letter-spacing: .07em;
+  padding: 2px 8px; border-radius: 2px; border: 1px solid;
+  text-transform: uppercase;
+}
+
+/* ── Wave announce ── */
+#waveAnnounce {
+  position: absolute; top: 44%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px; letter-spacing: .12em; color: #ff4422;
+  pointer-events: none; z-index: 15; opacity: 0;
+  text-align: center; line-height: 1.2; white-space: pre-line;
+}
+
+/* ── Effectiveness flash ── */
+#effectFlash {
+  position: absolute; top: 74px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px; letter-spacing: .08em;
+  pointer-events: none; z-index: 12; opacity: 0;
+  text-transform: uppercase;
+}
+
+/* ── Ability bar ── */
+#abilityBar {
+  position: absolute; bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  width: 580px; display: flex; gap: 8px;
+  pointer-events: none; z-index: 10;
+}
+.ability-slot {
+  flex: 1; border: 1px solid #2a2a2a; border-radius: 3px;
+  padding: 6px 8px;
+  background: rgba(10,10,15,.92);
+  position: relative; overflow: hidden;
+}
+.ability-slot.selected { border-color: var(--sc); }
+.ability-slot.selected::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--sc);
+}
+.slot-num { position: absolute; top: 4px; right: 6px; font-size: 9px; color: #555; }
+.slot-num.sel { color: #777; }
+.slot-name { font-size: 9px; color: #777; margin-bottom: 2px; }
+.slot-name.sel { color: var(--sc); }
+.slot-ability { font-size: 10px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot-ability.sel { color: #e0e0c0; }
+.slot-skills { font-size: 9px; color: #555; margin-top: 2px; min-height: 11px; }
+.slot-skills.sel { color: #777; }
+.slot-cdtrack { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: #1a1a1a; }
+.slot-cdfill { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--sc); opacity: .8; }
+
+/* ── Controls hint ── */
+#controls {
+  position: absolute; bottom: 8px; left: 0; width: 640px;
+  display: flex; justify-content: center; gap: 20px;
+  font-size: 10px; color: #555;
+  pointer-events: none; z-index: 10;
+}
+
+/* ── Screen overlays ── */
+.screen {
+  position: absolute; top: 0; left: 0;
+  width: 640px; height: 640px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; z-index: 20;
+  background: rgba(10,10,15,.94);
+}
+.screen h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px; letter-spacing: .1em;
+  color: #ff4422; line-height: 1;
+}
+.screen h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px; letter-spacing: .08em;
+  color: #e0e0c0; line-height: 1;
+}
+.screen p {
+  font-size: 13px; color: #aaa;
+  text-align: center; line-height: 1.9; max-width: 440px;
+}
+.screen button {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px; letter-spacing: .15em; text-transform: uppercase;
+  padding: 11px 28px; background: transparent;
+  border: 1px solid #ff4422; color: #ff4422;
+  cursor: pointer; transition: background .15s, color .15s;
+  margin-top: 4px;
+}
+.screen button:hover { background: #ff4422; color: #0a0a0f; }
+.screen button.secondary {
+  border-color: #444; color: #666; font-size: 12px; padding: 8px 20px;
+}
+.screen button.secondary:hover { background: #444; color: #e0e0c0; }
+
+/* ── Break screen specific ── */
+#screenBreak { gap: 0; justify-content: flex-start; padding: 20px; }
+.break-avatar-header {
+  width: 100%; display: flex; align-items: center; gap: 14px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid #1e1e1e;
+}
+.break-avatar-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+  letter-spacing: .08em; line-height: 1;
+}
+.break-avatar-sub { font-size: 11px; color: #666; margin-top: 2px; }
+.break-avatar-skills {
+  margin-left: auto; display: flex; gap: 6px; align-items: center;
+}
+.skill-pip {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1px solid #333; background: #111;
+}
+.skill-pip.filled { background: var(--ac); border-color: var(--ac); }
+
+.draft-options {
+  width: 100%; display: flex; gap: 12px; margin-bottom: 20px;
+}
+.draft-card {
+  flex: 1; border: 1px solid #222; border-radius: 4px;
+  padding: 14px 12px; cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative; overflow: hidden;
+}
+.draft-card:hover { border-color: var(--ac); background: rgba(255,255,255,.03); }
+.draft-card.selected-card { border-color: var(--ac); background: rgba(255,255,255,.05); }
+.draft-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--ac); opacity: 0; transition: opacity .15s;
+}
+.draft-card:hover::before, .draft-card.selected-card::before { opacity: 1; }
+.draft-skill-name {
+  font-size: 13px; color: #e0e0c0; margin-bottom: 4px; letter-spacing: .04em;
+}
+.draft-skill-level {
+  font-size: 10px; margin-bottom: 8px; letter-spacing: .06em;
+}
+.draft-skill-desc { font-size: 11px; color: #777; line-height: 1.6; }
+.draft-skill-tags { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+.skill-tag {
+  font-size: 9px; padding: 1px 6px; border-radius: 2px;
+  border: 1px solid #2a2a2a; color: #555; text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.break-footer {
+  width: 100%; display: flex; justify-content: space-between;
+  align-items: center; margin-top: auto;
+  padding-top: 12px; border-top: 1px solid #1a1a1a;
+}
+.break-progress { font-size: 11px; color: #555; letter-spacing: .06em; }
+
+/* ── Terrain debug (remove later) ── */
+.terrain-legend { display: flex; gap: 12px; flex-wrap: wrap; }
+.terrain-swatch { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #666; }
+.terrain-swatch-box { width: 12px; height: 12px; border-radius: 1px; }
