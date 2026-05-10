@@ -71,8 +71,8 @@ function updateBullets(STATE) {
   // Remove bullets that hit walls or expired
   STATE.bullets = STATE.bullets.filter(b =>
     b.life > 0 &&
-    b.x > 0 && b.x < C.W &&
-    b.y > 0 && b.y < C.H &&
+    b.x > 0 && b.x < C.WORLD_W &&
+    b.y > 0 && b.y < C.WORLD_H &&
     isBulletPassable(b.x, b.y)
   );
 }

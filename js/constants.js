@@ -3,58 +3,79 @@
 // Change a number here, nothing else needs to touch it
 // ============================================================
 const C = {
-  // Canvas
+  // Canvas — viewport, never changes
   W: 640, H: 640,
 
-  // Terrain
-  TILE: 32,                   // tile size in px — map is W/TILE × H/TILE = 20×20
-  TILES_X: 20, TILES_Y: 20,
+  // Tile size
+  TILE: 32,
+
+  // ── WORLD SIZE — change these two to resize the world ──
+  // World is WORLD_TILES × WORLD_TILES tiles
+  // 80×80 = 2560×2560px world. Try 60 for smaller, 100 for larger.
+  WORLD_TILES: 80,
+
+  // Derived — computed below, don't edit directly
+  get WORLD_W() { return this.WORLD_TILES * this.TILE; },
+  get WORLD_H() { return this.WORLD_TILES * this.TILE; },
+
+  // Viewport in tiles (always canvas size / tile size)
+  get TILES_X() { return Math.ceil(this.W / this.TILE) + 2; }, // +2 for overdraw buffer
+  get TILES_Y() { return Math.ceil(this.H / this.TILE) + 2; },
 
   // Formation
-  FORMATION_RADIUS: 40,       // distance from center to each avatar
-  ROTATION_SPEED: 0.10,       // how fast formation tracks mouse (0-1)
+  FORMATION_RADIUS: 40,
+  ROTATION_SPEED: 0.10,
   PLAYER_SPEED: 2.8,
-  PLAYER_COLLISION_R: 10,     // formation center collision radius vs walls
+  PLAYER_COLLISION_R: 14,
 
   // Combat
-  BULLET_BASE_DAMAGE: 1.0,    // weapon damage is multiplied by this
+  BULLET_BASE_DAMAGE: 1.0,
   ENEMY_BASE_SPEED: 0.9,
   ENEMY_BASE_HP: 3,
-  ENEMY_COLLISION_R: 12,      // enemy collision radius
-  KILL_RADIUS: 18,            // formation center = death if enemy reaches this
+  ENEMY_COLLISION_R: 12,
+  KILL_RADIUS: 18,
 
   // Sprites
-  PIXEL: 2,                   // each sprite "pixel" = 2 canvas pixels
-  SPRITE_SIZE: 16,            // sprites are 16×16
+  PIXEL: 2,
+  SPRITE_SIZE: 16,
 
-  // Spawn
+  // Spawn — enemies spawn this many world-px from formation
   MAX_ENEMIES: 90,
-  SPAWN_RATE_BASE: 85,        // frames between spawns at wave 1
-  SPAWN_RATE_MIN: 22,         // fastest possible spawn rate
-  SPAWN_BURST_CHANCE: 0.30,   // chance of double spawn on later waves
+  SPAWN_RADIUS_MIN: 340,   // don't spawn too close
+  SPAWN_RADIUS_MAX: 480,   // don't spawn too far off screen
+  SPAWN_RATE_BASE: 85,
+  SPAWN_RATE_MIN: 22,
+  SPAWN_BURST_CHANCE: 0.30,
 
   // Wave
-  WAVE_DURATION: 1800,        // frames per wave (~30s at 60fps)
-  WAVE_TRANSITION: 180,       // frames of calm before break screen
+  WAVE_DURATION: 1800,
+  WAVE_TRANSITION: 180,
 
   // Death animation
   DEATH_ANIM_FRAMES: 20,
 
   // Skills
-  MAX_SKILL_SLOTS: 4,         // skills per avatar
-  MAX_SKILL_LEVEL: 3,         // max level per skill
-  DRAFT_OPTIONS: 3,           // cards shown per draft pick
-  CROSS_TRAIN_CHANCE: 0.15,   // chance a draft option is from another avatar's pool
+  MAX_SKILL_SLOTS: 4,
+  MAX_SKILL_LEVEL: 3,
+  DRAFT_OPTIONS: 3,
+  CROSS_TRAIN_CHANCE: 0.15,
 
   // Progression
   SAVE_KEY: 'apocollapse-save',
 
   // Hazard
-  HAZARD_TICK_FRAMES: 60,     // how often hazards apply their effect
+  HAZARD_TICK_FRAMES: 60,
 
-  // Terrain generation
-  WALL_DENSITY_BASE: 0.10,    // base % of tiles that are walls
-  COVER_DENSITY_BASE: 0.08,   // base % of tiles that are cover
-  HAZARD_DENSITY_BASE: 0.04,  // base % of tiles that are hazards
-  DENSITY_PER_APOC: 0.02,     // additional density per extra active apocalypse
+  // Terrain generation — scene-based
+  // Densities are per-scene, not global
+  BUILDING_COVERAGE: 0.22,  // fraction of world that is building footprint
+  COVER_COVERAGE:    0.06,  // fraction that is cover objects
+  HAZARD_COVERAGE:   0.04,  // fraction that is hazard tiles
+  COVERAGE_PER_APOC: 0.02,  // additional coverage per extra active apocalypse
+
+  // Scene piece sizes (in tiles)
+  BUILDING_MIN: 3,   // min building footprint dimension
+  BUILDING_MAX: 8,   // max building footprint dimension
+  ROAD_WIDTH: 3,     // width of road corridors in tiles
+  CLEAR_RADIUS: 5,   // tiles kept clear around spawn point
 };
